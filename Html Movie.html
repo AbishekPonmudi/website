@@ -1,0 +1,619 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Sen:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <title>Movie Design</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo-container">
+                <h1 class="logo">Cruze</h1>
+            </div>
+
+
+        
+            <style>
+                *
+                 {
+                  box-sizing: border-box;
+                }
+                
+                body {
+                  font: 16px Arial;  
+                }
+                
+                /*the container must be positioned relative:*/
+                .autocomplete {
+                  position: relative;
+                  display: inline-block;
+                }
+                
+                input {
+                  border: 1px solid transparent;
+                  background-color:white;
+                  padding: 5px;
+                  font-size: 15px;
+                 
+                  border-radius: 10px;
+                  transition: width 0.3
+                }
+                
+                input[type=text] {
+                  background-color:white;
+                  width: 100%;
+            
+                  border-radius: 10px;
+                  background-color:whitesmoke;
+                  color:black;
+                  transition: background-color 0.3s;
+                }
+                
+                input[type=submit] {
+                  background-color: red;
+                  color: black;
+                  cursor: pointer;
+                }
+                
+                .autocomplete-items {
+                  position: absolute;
+                  border: 1px black;
+                  border-bottom: 10px;
+                  border-radius: 10px;
+                  border-top: 10px;
+                  z-index: 100;
+                  /*position the autocomplete items to be the same width as the container:*/
+                  top: 100%;
+                  left: 5%;
+                  right: 5%;
+                }
+                
+                .autocomplete-items div {
+                  padding: 8px;
+                  border-radius: 6px;
+                  color:whitesmoke;
+                  cursor: pointer;
+                  background-color:black; 
+                  border-bottom: 1px solid red; 
+                }
+                
+                /*when hovering an item:*/
+                .autocomplete-items div:hover {
+                  background-color: gray; 
+                }
+                
+                /*when navigating through the items using the arrow keys:*/
+                .autocomplete-active {
+                  background-color: DodgerBlue !important; 
+                  color: red; 
+                }
+                </style>
+                </head>     
+             <body>
+                
+                <!--Make sure the form has the autocomplete function switched off:-->
+                <form autocomplete="off" action="/action_page.php">
+                  <div class="autocomplete" style="width:300px;">
+                    <input id="myInput" type="text" name="myCountry" placeholder="search....">
+                  </div>
+                  <input type="submit" value ="search">
+                </form>
+                
+                <script>
+                function autocomplete(inp, arr) {
+                  /*the autocomplete function takes two arguments,
+                  the text field element and an array of possible autocompleted values:*/
+                  var currentFocus;
+                  /*execute a function when someone writes in the text field:*/
+                  inp.addEventListener("input", function(e) {
+                      var a, b, i, val = this.value;
+                      /*close any already open lists of autocompleted values*/
+                      closeAllLists();
+                      if (!val) { return false;}
+                      currentFocus = -1;
+                      /*create a DIV element that will contain the items (values):*/
+                      a = document.createElement("DIV");
+                      a.setAttribute("id", this.id + "autocomplete-list");
+                      a.setAttribute("class", "autocomplete-items");
+                      /*append the DIV element as a child of the autocomplete container:*/
+                      this.parentNode.appendChild(a);
+                      /*for each item in the array...*/
+                      for (i = 0; i < arr.length; i++) {
+                        /*check if the item starts with the same letters as the text field value:*/
+                        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                          /*create a DIV element for each matching element:*/
+                          b = document.createElement("DIV");
+                          /*make the matching letters bold:*/
+                          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                          b.innerHTML += arr[i].substr(val.length);
+                          /*insert a input field that will hold the current array item's value:*/
+                          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                          /*execute a function when someone clicks on the item value (DIV element):*/
+                          b.addEventListener("click", function(e) {
+                              /*insert the value for the autocomplete text field:*/
+                              inp.value = this.getElementsByTagName("input")[0].value;
+                              /*close the list of autocompleted values,
+                              (or any other open lists of autocompleted values:*/
+                              closeAllLists();
+                          });
+                          a.appendChild(b);
+                        }
+                      }
+                  });
+                  /*execute a function presses a key on the keyboard:*/
+                  inp.addEventListener("keydown", function(e) {
+                      var x = document.getElementById(this.id + "autocomplete-list");
+                      if (x) x = x.getElementsByTagName("div");
+                      if (e.keyCode == 40) {
+                        /*If the arrow DOWN key is pressed,
+                        increase the currentFocus variable:*/
+                        currentFocus++;
+                        /*and and make the current item more visible:*/
+                        addActive(x);
+                      } else if (e.keyCode == 38) { //up
+                        /*If the arrow UP key is pressed,
+                        decrease the currentFocus variable:*/
+                        currentFocus--;
+                        /*and and make the current item more visible:*/
+                        addActive(x);
+                      } else if (e.keyCode == 13) {
+                        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                        e.preventDefault();
+                        if (currentFocus > -1) {
+                          /*and simulate a click on the "active" item:*/
+                          if (x) x[currentFocus].click();
+                        }
+                      }
+                  });
+                  function addActive(x) {
+                    /*a function to classify an item as "active":*/
+                    if (!x) return false;
+                    /*start by removing the "active" class on all items:*/
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = (x.length - 1);
+                    /*add class "autocomplete-active":*/
+                    x[currentFocus].classList.add("autocomplete-active");
+                  }
+                  function removeActive(x) {
+                    /*a function to remove the "active" class from all autocomplete items:*/
+                    for (var i = 0; i < x.length; i++) {
+                      x[i].classList.remove("autocomplete-active");
+                    }
+                  }
+                  function closeAllLists(elmnt) {
+                    /*close all autocomplete lists in the document,
+                    except the one passed as an argument:*/
+                    var x = document.getElementsByClassName("autocomplete-items");
+                    for (var i = 0; i < x.length; i++) {
+                      if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                      }
+                    }
+                  }
+                  /*execute a function when someone clicks in the document:*/
+                  document.addEventListener("click", function (e) {
+                      closeAllLists(e.target);
+                  });
+                }
+                
+                /*An array containing all the country names in the world:*/
+                var countries = [  "The Godfather",
+                "Her (Fantacy ,Drama)",
+                "Iron man 1 (Action,Adventure)",
+  "The Shawshank Redemption",
+  "Pulp Fiction",
+  "The Dark Knight",
+  "Fight Club",
+  "Goodfellas",
+  "Inception",
+  "The Matrix",
+  "Forrest Gump",
+  "The Lord of the Rings",
+  "Iron Man 2 (Action, Adventure)",
+  "Iron Man 3 (Action, Adventure)",
+  "Bat Man",
+  "Storm (Thriller,Mystery)",
+  "Shawshank Redemption (Drama, Crime)",
+  "Godfather (Crime, Drama)",
+  "Pulp Fiction (Crime, Drama)",
+  "The Dark Knight (Action, Crime, Drama)",
+  "Fight Club (Drama)",
+  "Forrest Gump (Drama, Romance)",
+  "The Matrix (Action, Sci-Fi)",
+  "Inception (Action, Adventure, Sci-Fi)",
+  "The Lord of the Rings",
+  "Star Wars Episode IV - A New Hope (Action, Adventure, Fantasy, Sci-Fi)",
+  "Saving Private Ryan (Action, Drama, War)",
+  "Goodfellas (Biography, Crime, Drama)",
+  "Avengers (Action, Adventure, Sci-Fi)",
+  "Silence of the Lambs (Crime, Drama, Thriller)",
+  "Gladiator (Action, Adventure, Drama)",
+  "Departed (Crime, Drama, Thriller)",
+  "Schindler's List (Biography, Drama, History)",
+  "Prestige (Drama, Mystery, Sci-Fi, Thriller)",
+  "Casablanca (Drama, Romance, War)",
+  "Green Mile (Crime, Drama, Fantasy, Mystery)",
+  "Titanic (Drama, Romance)",
+  "The Shining (Drama, Horror)",
+  "Terminator (Action, Sci-Fi)",
+  "Seven (Crime, Drama, Mystery, Thriller)",
+  "The Pianist (Biography, Drama, Music, War)",
+  "The Dark Knight Rises (Action, Adventure)",
+  "Social Network (Biography, Drama)",
+  "Jurassic Park (Action, Adventure, Sci-Fi)",
+  "Back to the Future (Adventure, Comedy, Sci-Fi)",
+  "Gone with the Wind (Drama, History, Romance, War)",
+  "The Great Gatsby (Drama, Romance)",
+  "The Godfather: Part II (Crime, Drama)",
+  "E.T. the Extra-Terrestrial (Family, Sci-Fi)",
+  "Deadpool (Action, Adventure, Comedy, Sci-Fi)",
+  "Raiders of the Lost Ark (Action, Adventure)",
+  "Lion King (Animation, Adventure, Drama, Family, Musical)",
+  "The Big Lebowski (Comedy, Crime, Sport)",
+  "Interstellar (Adventure, Drama, Sci-Fi)",
+  "Princess Bride (Adventure, Family, Fantasy, Romance)",
+  "Inglourious Basterds (Adventure, Drama, War)",
+  "Sixth Sense (Drama, Mystery, Thriller)",
+  "Finding Nemo (Animation, Adventure, Comedy, Family)",
+  "Reservoir Dogs (Crime, Drama, Thriller)",
+  "Mad Max: Fury Road (Action, Adventure, Sci-Fi, Thriller)",
+  "Notebook (Drama, Romance)",
+  "Breakfast Club (Comedy, Drama)",
+  "Exorcist (Horror)",
+  "Grand Budapest Hotel (Adventure, Comedy, Crime, Drama)",
+  "American Beauty (Drama)",
+  "Blade Runner (Action, Sci-Fi, Thriller)",
+  "The Wolf of Wall Street (Biography, Comedy, Crime, Drama)",
+  "The Truman Show (Comedy, Drama, Sci-Fi)",
+  "Die Hard (Action, Thriller)",
+  "Harry Potter and the Philosopher's Stone (Adventure, Family, Fantasy)",
+  "The Avengers (Action, Adventure, Sci-Fi)",
+  "La La Land (Comedy, Drama, Music, Musical, Romance)",
+  "Shutter Island (Mystery, Thriller)",
+  "The Sound of Music (Biography, Drama, Family, Musical, Romance)",
+  "The Revenant (Action, Adventure, Biography, Drama, Thriller, Western)",
+  "Casino Royale (Action, Adventure, Thriller)",
+  "Dark Knight (Action, Crime, Drama)",
+  "Toy Story (Animation, Adventure, Comedy, Family, Fantasy)",
+  "Matrix Reloaded (Action, Sci-Fi)",
+  "Jaws (Adventure, Thriller)",
+  "No Country for Old Men (Crime, Drama, Thriller)",
+  "Ratatouille (Animation, Adventure, Comedy, Drama, Family, Fantasy)",
+  "Pursuit of Happyness (Biography, Drama)",
+  "Martian (Adventure, Drama, Sci-Fi)",
+  "Wizard of Oz (Adventure, Family, Fantasy, Musical)",
+  "The Conjuring (Horror, Mystery, Thriller)",
+  "A Clockwork Orange (Crime, Drama, Sci-Fi)",
+  "The Bourne Identity (Action, Mystery, Thriller)",
+  "The Hateful Eight (Crime, Drama, Mystery, Thriller, Western)",
+  "The Avengers: Age of Ultron (Action, Adventure, Sci-Fi)",
+  "Eternal Sunshine of the Spotless Mind (Drama, Romance, Sci-Fi)",
+  "Gravity (Drama, Sci-Fi, Thriller)",
+  "The Incredibles (Animation, Action, Adventure, Family)",
+  "Jumanji (Action, Adventure, Comedy, Family, Fantasy)",
+  "Kill Bill: Vol. 1 (Action, Crime, Thriller)",
+  "The Princess Diaries (Comedy, Family, Romance)",
+  "Notebook (Drama, Romance)",
+  "Devil Wears Prada (Comedy, Drama)",
+  "Hangover (Comedy)",
+  "The Fault in Our Stars (Drama, Romance)",
+  "The Conjuring 2 (Horror, Mystery, Thriller)",
+  "Chronicles of Narnia: The Lion, the Witch and the Wardrobe",
+  "The Social Network (Biography, Drama)",
+  "Jungle Book (Adventure, Drama, Family, Fantasy)",
+  "Bourne Supremacy (Action, Mystery, Thriller)",
+  "Maze Runner (Action, Mystery, Sci-Fi, Thriller)",
+  "Grinch (Animation, Comedy, Family, Fantasy)",
+  "Da Vinci Code (Mystery, Thriller)",
+  "Little Mermaid (Animation, Family, Fantasy, Musical, Romance)",
+  "The Conjuring: The Devil Made Me Do It (Horror, Mystery, Thriller)",
+  "Dark Knight Rise (Action, Adventure)",
+  "Hunger Games (Action, Adventure, Sci-Fi, Thriller)",
+  "Matrix Revolutions (Action, Sci-Fi)",
+  "Fault in Our Stars (Drama, Romance)",
+  "The Great Gatsby (Drama, Romance)",
+  "Spider-Man (Action, Adventure, Sci-Fi)",
+  "The Chronicles of Narnia: Prince Caspian (Action, Adventure, Family, Fantasy)",
+  "The Expendables (Action, Adventure, Thriller)",
+  "Wolf of Wall Street (Biography, Comedy, Crime, Drama)",
+  "Proposal (Comedy, Drama, Romance)"];
+                
+                /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+                autocomplete(document.getElementById("myInput"), countries);
+                </script>
+                
+                </body>
+               
+            <div class="menu-container">
+                <ul class="menu-list">
+                    <li class="menu-list-item active">Home</li>
+                    <li class="menu-list-item">Movies</li>
+                    <li class="menu-list-item">Series</li>
+                    <li class="menu-list-item">Popular</li>
+                    <li class="menu-list-item">Trends</li>
+
+                </ul>
+            </div>
+            <div class="profile-container">
+                <img class="profile-picture" src="img/profile.jpg" alt="">
+                <div class="profile-text-container">
+                    <span class="profile-text">Profile</span>
+                    <i class="fas fa-caret-down"></i>
+                </div>
+                <div class="toggle">
+                    <i class="fas fa-moon toggle-icon"></i>
+                    <i class="fas fa-sun toggle-icon"></i>
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <i class="left-menu-icon fas fa-search"></i>
+        <i class="left-menu-icon fas fa-home"></i>
+        <i class="left-menu-icon fas fa-users"></i>
+        <i class="left-menu-icon fas fa-bookmark"></i>
+        <i class="left-menu-icon fas fa-tv"></i>
+        <i class="left-menu-icon fas fa-hourglass-start"></i>
+        <i class="left-menu-icon fas fa-shopping-cart"></i>
+    </div>
+    <div class="container">
+        <div class="content-container">
+            <div class="featured-content"
+                style="background: linear-gradient(to bottom, rgba(0,0,0,0), #151515), url('img/f-1.jpg');">
+                <img class="featured-title" src="img/f-t-1.png" alt="">
+                <p class="featured-desc">Set in America's Deep South 2 years before the Civil War, German former dentist turned bounty hunter Dr King Schultz (Christoph Waltz) purchases the slave Django (Jamie Foxx). Schultz is after a trio of outlaws, the notorious Brittle brothers, and only Django can identify them.</p>
+                <button class="featured-button">WATCH</button>
+            </div>
+            <div class="movie-list-container">
+                <h1 class="movie-list-title">Recomendations</h1>
+                <div class="movie-list-wrapper">
+                    <div class="movie-list">
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpeg" alt="https://www.airtelxstream.in/movies/her/HUNGAMA_MOVIE_19210726 ">
+                            <span class="movie-list-item-title">her</span>
+                            <a href="https://archive.org/details/her2013joaquinphoenixrooneymarascene" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">Her is a movie about a lonely writer who falls in love with his artificially intelligent virtual assistant</p>
+                            
+                           
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/2.jpeg" alt="">
+                            <span class="movie-list-item-title">Star Wars</span>
+                            <a href="https://archive.org/details/star.-wars_202112" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">Star Wars is a movie series about a galactic conflict between the Jedi and the Sith.</p>
+                           
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/3.jpg" alt="">
+                            <span class="movie-list-item-title">Storm</span>
+                            <a href="https://archive.org/details/star.-wars_202112" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">Storm is a movie about a journalist who uncovers a conspiracy involving a war .</p>
+                           
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/4.jpg" alt="">
+                            <span class="movie-list-item-title">1917</span>
+                            <a href="https://archive.org/details/1917_20200902" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc"> Two British soldiers who are sent on a dangerous mission to deliver a message that could save 1,600 lives during World War I</p>
+                           
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/5.jpg" alt="">
+                            <span class="movie-list-item-title">Avengers</span>
+                            <a href="https://archive.org/details/Avenger_201605" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">A series about a team of superheroes who join forces to save the world of threats such as Loki, Ultron, and Thanos</p>
+                           
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/6.jpg" alt="">
+                            <span class="movie-list-item-title">Rampage</span>
+                            <a href="https://archive.org/details/RampageMp4" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">A primatologist who must stop three giant mutated animals from destroying Chicago.</p>
+                          
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/7.jpg" alt="">
+                            <span class="movie-list-item-title">Exorcist</span>
+                            <a href="https://archive.org/details/the-exorcist-1973_20221011" class="movie-list-item-button" >Watch</button></a>
+                            <p class="movie-list-item-desc">A young girl is possessed by the devil. This horror thriller is directed by William Friedkin..</p>
+                           
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+            <div class="movie-list-container">
+                <h1 class="movie-list-title">Featured</h1>
+                <div class="movie-list-wrapper">
+                    <div class="movie-list">
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/8.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/9.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/10.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/11.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/12.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+            <div class="featured-content"
+                style="background: linear-gradient(to bottom, rgba(0,0,0,0), #151515), url('img/f-2.jpg');">
+                <img class="featured-title" src="img/f-t-2.png" alt="">
+                <p class="featured-desc">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto illo dolor
+                    deserunt nam assumenda ipsa eligendi dolore, ipsum id fugiat quo enim impedit, laboriosam omnis
+                    minima voluptatibus incidunt. Accusamus, provident.</p>
+                <button class="featured-button">WATCH</button>
+            </div>
+            <div class="movie-list-container">
+                <h1 class="movie-list-title">NEW RELEASES</h1>
+                <div class="movie-list-wrapper">
+                    <div class="movie-list">
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpeg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/2.jpeg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/15.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/3.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/4.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/5.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+            <div class="movie-list-container">
+                <h1 class="movie-list-title">NEW RELEASES</h1>
+                <div class="movie-list-wrapper">
+                    <div class="movie-list">
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/17.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/18.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/19.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/7.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                        <div class="movie-list-item">
+                            <img class="movie-list-item-img" src="img/1.jpg" alt="">
+                            <span class="movie-list-item-title">Her</span>
+                            <p class="movie-list-item-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. At
+                                hic fugit similique accusantium.</p>
+                            <button class="movie-list-item-button">Watch</button>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
